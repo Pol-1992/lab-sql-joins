@@ -1,6 +1,8 @@
 -- Joining on multiple tables
 -- Write SQL queries to perform the following tasks using the Sakila database:
+
 USE sakila;
+
 -- 1. List the number of films per category.
 
 SELECT
@@ -27,18 +29,47 @@ JOIN country ON city.country_id = country.country_id;
 
 SELECT
 store.store_id,
-SUM(amount).payment_id
-
-
-
+CONCAT(SUM(payment.amount), ' $') AS total_revenue
+FROM store
+JOIN staff ON store.store_id = staff.store_id
+JOIN payment ON staff.staff_id = payment.staff_id
+GROUP BY store.store_id;
 
 
 -- 4. Determine the average running time of films for each category.
 
+SELECT
+category.name,
+AVG(film.length)
+FROM film
+JOIN film_category ON film.film_id = film_category.film_id
+JOIN category ON film_category.category_id = category.category_id
+GROUP BY category.name;
+
+
 -- Bonus:
 -- 5. Identify the film categories with the longest average running time.
 
+SELECT
+category.name,
+AVG(film.length) AS avg_time
+FROM film
+JOIN film_category ON film.film_id = film_category.film_id
+JOIN category ON film_category.category_id = category.category_id
+GROUP BY category.name
+ORDER BY avg_time DESC;
+
 -- 6. Display the top 10 most frequently rented movies in descending order.
+
+SELECT
+film.title,
+COUNT(rental.rental_id) AS most_rent
+FROM rental
+JOIN inventory ON rental.inventory_id = inventory.inventory_id
+JOIN film ON inventory.film_id = film.film_id
+GROUP BY film.title
+ORDER BY most_rent DESC
+LIMIT 10;
 
 -- 7. Determine if "Academy Dinosaur" can be rented from Store 1.
 
